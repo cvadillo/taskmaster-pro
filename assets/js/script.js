@@ -33,7 +33,8 @@ var loadTasks = function() {
 
   // loop over object properties
   $.each(tasks, function(list, arr) {
-    console.log(list, arr);
+
+
     // then loop over sub-array
     arr.forEach(function(task) {
       createTask(task.text, task.date, list);
@@ -45,8 +46,38 @@ var saveTasks = function() {
   localStorage.setItem("tasks", JSON.stringify(tasks));
 };
 
+// Helps the user modify the task when they click on the text
+$(".list-group").on("click", "p", function() {
+  var text = $(this).text().trim();
+  var textInput = $("<textarea>").addClass("form-control").val(text);
+  $(this).replaceWith(textInput);
+  textInput.trigger("focus");
+  console.log(text);
+});
 
+// Will save an updated task once the user is done making their update
+$(".list-group").on("blur", "textarea", function() {
+  // Get the textarea's current value/text
+  var text = $(this).val().trim();
 
+  // Get the parent ul's id attribute
+  var status = $(this).closest(".list-group").attr("id").replace("list-", "");
+
+  // Get the tasks position in the list of the other li elements
+  var index = $(this).closest(".list-group-item").index();
+
+  // Update the Array
+  tasks[status][index].text = text;
+  
+  // Save to localStorage
+  saveTasks();
+
+  // Recreate the p element
+  var taskP = $("<p>").addClass("m-1").text(text);
+
+  // Replace textarea with p element
+  $(this).replaceWith(taskP);
+});
 
 // modal was triggered
 $("#task-form-modal").on("show.bs.modal", function() {
