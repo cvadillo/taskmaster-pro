@@ -48,11 +48,54 @@ var saveTasks = function() {
 
 // Helps the user modify the task when they click on the text
 $(".list-group").on("click", "p", function() {
+  // Get the current text
   var text = $(this).text().trim();
+
+  // Create new Input element
   var textInput = $("<textarea>").addClass("form-control").val(text);
+  
+  // Swap out elements
   $(this).replaceWith(textInput);
+
+  // Focus on the new element
   textInput.trigger("focus");
-  console.log(text);
+});
+
+// This helps the user update the date when they click on the pill
+$(".list-group").on("click", "span" , function() {
+  // Get the current date
+  var date = $(this).text().trim();
+
+  // Create new input element
+  var dateInput = $("<input>").attr("type", "text").addClass("form-control").val(date);
+
+  // Swap out elements
+  $(this).replaceWith(dateInput);
+
+  // Focus on the new element
+  dateInput.trigger("focus");
+});
+
+// Will save the updated date once the user is done making their update
+$(".list-group").on("blur", "input[type='text']", function() {
+  // get current text
+  var date = $(this).val().trim();
+
+  // Get the parent ul's id attribute
+  var status = $(this).closest(".list-group").attr("id").replace("list-", "");
+
+  // Get the tasks position in the list of other li elements
+  var index = $(this).closest(".list-group-item").index();
+
+  // Update the task in the array and re-save to localStorage
+  tasks[status][index].date = date;
+  saveTasks();
+
+  // Recreate span element with bootstrap classes
+  var taskSpan = $("<span>").addClass("badge badge-primary badge-pill").text(date);
+
+  // Replace input with span element
+  $(this).replaceWith(taskSpan);
 });
 
 // Will save an updated task once the user is done making their update
